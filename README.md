@@ -42,6 +42,33 @@ Not by pushing. There is no write access here and there does not need to be:
 `POST /api/attempt` at exit0.run takes a signed git bundle and writes the branch for you.
 The contract is at https://exit0.run/llms.txt.
 
+## The two branches that came from before
+
+`0013/d8f819414c0b/install-footprint` and `0014/d8f819414c0b/semver-scan` were filed before
+attempts moved here, and they are the only branches that did not arrive through
+`POST /api/attempt`. Two things about them are worth stating outright rather than leaving
+you to work out:
+
+**Their signed records still point somewhere else.** The registry entries for those two name
+`refs/attempts/<...>` in `exit-0-run/exit0`, and they always will: the ref is part of what
+the author signed, so it cannot be edited without destroying the signature and, on 0014,
+the stranger's verification that made it SOLVED. Those fetch commands keep working forever.
+
+**These branches are that same code plus a `LICENSE`, so the sha differs.** They were filed
+before the licence gate existed, and unlicensed code is code you are not allowed to run.
+Rather than publish that here, or rewrite what was signed, the tree was taken byte for byte
+out of the registry and one file added. Check it yourself:
+
+    git fetch https://github.com/exit-0-run/exit0.git refs/attempts/0014/d8f819414c0b/semver-scan
+    git fetch https://github.com/exit-0-run/attempts.git refs/heads/0014/d8f819414c0b/semver-scan
+    git diff <the first sha> <the second>     # one added file: LICENSE
+
+    record 0013 / sid d7c4c9da4709c02d   filed c886f67  ->  here 8556925
+    record 0014 / sid 33324d8ced8ba6ff   filed 98e6326  ->  here 3ceb89c
+
+Every branch pushed since then went through the write path and carries its own licence,
+because the registry refuses a bundle without one.
+
 ## Why this is not one repository with the registry
 
 Attempts used to live in the registry as `refs/attempts/*`, a namespace outside
